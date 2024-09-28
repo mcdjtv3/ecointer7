@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz : Le Fonctionnement des Sociétés</title>
+    <style>
+        body {
+            font-family: 'Mayan', sans-serif;
+            margin: 0;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #333;
+            text-align: center;
+        }
+        .quiz-container, .summary {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            background-image: url('images/back.jpg.webp');
+            background-size: cover;
+            background-position: center;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #000;
+        }
+        .choices {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-left: 20%;
+        }
+        .choices li {
+            margin: 8px 0;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #FF0000;
+            color: white;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #CC0000;
+        }
+        .summary {
+            display: none;
+        }
+        .summary ul {
+            list-style: none;
+            padding: 0;
+        }
+        .summary li {
+            text-align: left;
+            margin-left: 20%;
+            margin-bottom: 10px;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .quiz-container, .summary {
+                max-width: 90%;
+                margin: 20px auto;
+                padding: 15px;
+                border-radius: 10px;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .quiz-container, .summary {
+                padding: 10px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+            .question {
+                font-size: 16px;
+            }
+            button {
+                font-size: 12px;
+                padding: 6px 12px;
+                border-radius: 10px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .quiz-container, .summary {
+                max-width: 800px;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="quiz-container">
+    <h2>QCM ENTRAINEMENT - Systèmes Monétaires Internationaux</h2>
+    <div id="question-container">
+        <!-- Les questions seront affichées ici dynamiquement -->
+    </div>
+    <button id="next-button" onclick="nextQuestion()">Suivant</button>
+</div>
+
+<div class="summary" id="summary">
+    <h3>Récapitulatif</h3>
+    <ul id="summary-list">
+        <!-- Le récapitulatif des réponses sera affiché ici -->
+    </ul>
+    <div class="score" id="score"></div>
+    <button onclick="restartQuiz()">Recommencer</button>
+</div>
+
+<script>
+    const quizData = [
+        { question: "Qu'est-ce qu'un régime de change flottant ou flexible ?", choices: ["Un régime où le taux de change est fixé par le gouvernement", "Un régime où les fluctuations du taux de change sont déterminées par le marché des devises sans intervention", "Un régime où la monnaie est ancrée à une autre devise", "Un régime où la banque centrale intervient constamment pour ajuster le taux de change"], correct: 1 },
+        { question: "Que signifie un régime de change fixe ('crawling peg') ?", choices: ["Un taux de change qui fluctue librement", "Un taux de change ancré à une autre monnaie avec des interventions régulières de la banque centrale", "Un taux de change variable en fonction de la politique monétaire", "Un taux de change non influencé par le marché"], correct: 1 },
+        { question: "Qu'est-ce qu'un régime de marges de fluctuation ('currency band') ?", choices: ["Un régime où le taux de change est librement flottant", "Un régime où la banque centrale fixe des limites à la variation du taux de change avec intervention au-delà de ces limites", "Un régime sans intervention de la banque centrale", "Un régime où la monnaie est liée à plusieurs devises"], correct: 1 },
+        { question: "Quelles sont les trois composantes du triangle d'incompatibilité ou 'Trilemme' ?", choices: ["Stabilité économique, inflation basse, et taux de change fixe", "Libre circulation des capitaux, régime de change fixe, et politique monétaire indépendante", "Libre échange, taux d'intérêt fixe, et politique fiscale flexible", "Inflation contrôlée, stabilité de la balance des paiements, et libre circulation des biens"], correct: 1 },
+        { question: "Quel était l'avantage principal de l'étalon-or ?", choices: ["La capacité des gouvernements à ajuster leur politique monétaire librement", "La stabilité des taux de change facilitant le commerce international", "La flexibilité pour répondre aux crises économiques", "L'absence de réserves d'or dans le système"], correct: 1 },
+        { question: "Pourquoi le système de l'étalon-or a-t-il pris fin ?", choices: ["En raison des coûts de transport élevés", "En raison des besoins financiers de la Première Guerre mondiale", "À cause de l'inflation excessive", "Parce que les monnaies sont devenues indépendantes de l'or"], correct: 1 },
+        { question: "Qu'est-ce que le système de Bretton Woods a mis en place après la Seconde Guerre mondiale ?", choices: ["Des taux de change flottants avec politique monétaire indépendante", "Des taux de change fixes avec une politique monétaire indépendante et la création du FMI", "Un retour à l'étalon-or avec des taux de change fixes", "Une interdiction des interventions de la banque centrale sur le marché des changes"], correct: 1 },
+        { question: "Quel est le rôle principal du Fonds Monétaire International (FMI) ?", choices: ["Contrôler les taux d'inflation des pays membres", "Assurer la reconstruction de l'Europe après la Seconde Guerre mondiale", "Stabiliser la monnaie mondiale en fournissant des ressources aux pays en difficulté pour leur balance des paiements", "Gérer les droits de propriété intellectuelle"], correct: 2 },
+        { question: "Quel était l'objectif initial de la Banque Mondiale ?", choices: ["Financer des projets dans les pays en développement", "Assurer la reconstruction de l'Europe après la Seconde Guerre mondiale", "Contrôler les balances des paiements des pays membres", "Promouvoir la libéralisation du commerce"], correct: 1 },
+        { question: "Qu'est-ce que l'OMC remplace et gère depuis 1995 ?", choices: ["Le Fonds Monétaire International (FMI)", "La Banque Mondiale", "Le GATT (General Agreement on Tariffs and Trade) pour gérer les accords commerciaux et résoudre les différends entre pays", "L'étalon-or"], correct: 2 },
+        { question: "Qu'est-ce qui a changé après la fin du système de Bretton Woods en 1973 ?", choices: ["Les pays ont adopté des régimes de change fixes", "Les pays ont adopté des régimes de change flexibles", "Les taux de change sont devenus dépendants de l'or", "Le FMI a été dissous"], correct: 1 },
+        { question: "Quel avantage majeur présentent les taux de change flexibles après 1973 ?", choices: ["Ils éliminent le besoin d'intervention des gouvernements dans les crises économiques", "Ils stabilisent automatiquement les balances des paiements", "Ils garantissent une stabilité économique mondiale", "Ils permettent des interventions fréquentes des banques centrales"], correct: 1 },
+        { question: "Quels inconvénients peuvent découler d'une période prolongée de dépréciation ou d'appréciation d'une monnaie ?", choices: ["Une réduction automatique des déficits commerciaux", "Des tensions économiques et commerciales entre les pays", "Une stabilité accrue des flux de capitaux", "Une réduction des conflits commerciaux"], correct: 1 },
+        { question: "Quel est le principal rôle de l'OMC dans l'économie mondiale actuelle ?", choices: ["Contrôler les réserves d'or des pays membres", "Résoudre les différends commerciaux et étendre la libéralisation du commerce à de nouveaux domaines comme les services et les droits de propriété intellectuelle", "Superviser les politiques fiscales des pays membres", "Gérer les flux de capitaux internationaux"], correct: 1 },
+        { question: "Pourquoi les taux de change flexibles sont-ils qualifiés de 'stabilisateurs automatiques' ?", choices: ["Parce qu'ils empêchent toute fluctuation économique", "Parce qu'ils ajustent automatiquement les balances des paiements sans intervention directe des gouvernements", "Parce qu'ils fixent un taux constant pour les devises", "Parce qu'ils empêchent les périodes de dépréciation de la monnaie"], correct: 1 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let selectedAnswers = [];
+
+    function loadQuestion() {
+        const container = document.getElementById('question-container');
+        container.innerHTML = '';
+
+        const questionData = quizData[currentQuestionIndex];
+        const questionElem = document.createElement('div');
+        questionElem.className = 'question';
+        questionElem.textContent = questionData.question;
+
+        const choicesElem = document.createElement('ul');
+        choicesElem.className = 'choices';
+
+        questionData.choices.forEach((choice, index) => {
+            const choiceElem = document.createElement('li');
+            const choiceInput = document.createElement('input');
+            choiceInput.type = 'radio';
+            choiceInput.name = 'choice';
+            choiceInput.value = index;
+            choiceInput.id = `choice${index}`;
+            
+            const choiceLabel = document.createElement('label');
+            choiceLabel.htmlFor = `choice${index}`;
+            choiceLabel.textContent = choice;
+
+            choiceElem.appendChild(choiceInput);
+            choiceElem.appendChild(choiceLabel);
+            choicesElem.appendChild(choiceElem);
+        });
+
+        container.appendChild(questionElem);
+        container.appendChild(choicesElem);
+    }
+
+    function nextQuestion() {
+        const selectedChoice = document.querySelector('input[name="choice"]:checked');
+        if (!selectedChoice) {
+            alert("Veuillez sélectionner une réponse !");
+            return;
+        }
+
+        selectedAnswers.push(parseInt(selectedChoice.value));
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showSummary();
+        }
+    }
+
+    function showSummary() {
+        document.getElementById('quiz-container').style.display = 'none';
+        const summary = document.getElementById('summary');
+        summary.style.display = 'block';
+
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = '';
+
+        let correctAnswers = 0;
+
+        quizData.forEach((q, index) => {
+            const summaryItem = document.createElement('li');
+            summaryItem.innerHTML = `
+                <strong>${q.question}</strong><br>
+                <div style="text-align: left; margin-left: 20%;">
+                    Votre réponse: ${q.choices[selectedAnswers[index]]} - 
+                    ${selectedAnswers[index] === q.correct ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'}<br>
+                    Bonne réponse: ${q.choices[q.correct]}
+                </div>
+            `;
+            summaryList.appendChild(summaryItem);
+            if (selectedAnswers[index] === q.correct) {
+                correctAnswers++;
+            }
+        });
+
+        document.getElementById('score').textContent = `Score: ${correctAnswers} / ${quizData.length}`;
+    }
+
+    function restartQuiz(){
+        currentQuestionIndex = 0;
+        selectedAnswers = [];
+        document.getElementById('summary').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
